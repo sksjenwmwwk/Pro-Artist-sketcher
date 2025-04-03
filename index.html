@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Sketcher Artist - Photo to Sketch Converter</title>
+    <style>
+        :root {
+            --primary: #4a6fa5;
+            --secondary: #f0f0f0;
+            --dark: #333;
+            --light: #fff;
+            --accent: #e74c3c;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--secondary);
+            color: var(--dark);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul li {
+            margin-left: 20px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: var(--accent);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            background-color: var(--light);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 30px;
+            min-height: 70vh;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        h2 {
+            color: var(--primary);
+            margin-top: 30px;
+        }
+
+        /* Tool page styles */
+        .upload-area {
+            border: 2px dashed var(--primary);
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: all 0.3s;
+            background-color: rgba(74, 111, 165, 0.05);
+        }
+
+        .upload-area:hover {
+            background-color: rgba(74, 111, 165, 0.1);
+        }
+
+        .upload-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .image-box {
+            flex: 1;
+            min-width: 300px;
+            max-width: 450px;
+        }
+
+        .image-box img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .control-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .loading {
+            text-align: center;
+            margin: 20px 0;
+            display: none;
+        }
+
+        /* About page styles */
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Footer styles */
+        footer {
+            background-color: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 50px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            nav ul {
+                margin-top: 15px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            nav ul li {
+                margin: 5px 10px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            .preview-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="#" class="logo" data-page="tool">Pro Sketcher Artist</a>
+            <nav>
+                <ul>
+                    <li><a href="#" data-page="tool">Tool</a></li>
+                    <li><a href="#" data-page="about">About</a></li>
+                    <li><a href="#" data-page="disclaimer">Disclaimer</a></li>
+                    <li><a href="#" data-page="privacy">Privacy Policy</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Tool Page -->
+        <div class="page active" id="tool-page">
+            <h1>Photo to Sketch Converter</h1>
+            
+            <div class="upload-area" id="dropArea">
+                <button class="upload-btn" id="uploadBtn">Choose Photo</button>
+                <input type="file" id="fileInput" accept="image/*">
+                <p>or drag and drop your photo here</p>
+            </div>
+
+            <div class="preview-container">
+                <div class="image-box">
+                    <img id="originalImage" style="display: none;">
+                    <p class="image-label">Original Photo</p>
+                </div>
+                <div class="image-box">
+                    <img id="sketchImage" style="display: none;">
+                    <p class="image-label">Pencil Sketch</p>
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label for="edgeThreshold">Edge Threshold <span id="edgeValue">50</span></label>
+                    <input type="range" id="edgeThreshold" class="slider" min="1" max="100" value="50">
+                </div>
+                <div class="control-group">
+                    <label for="pencilIntensity">Pencil Intensity <span id="pencilValue">70</span></label>
+                    <input type="range" id="pencilIntensity" class="slider" min="1" max="100" value="70">
+                </div>
+                <div class="control-group">
+                    <label for="shadingDetail">Shading Detail <span id="shadingValue">30</span></label>
+                    <input type="range" id="shadingDetail" class="slider" min="1" max="100" value="30">
+                </div>
+            </div>
+
+            <div class="loading" id="loading">
+                Converting to sketch...
+            </div>
+
+            <div class="action-btns">
+                <button id="downloadBtn" class="action-btn" disabled>Download Sketch</button>
+                <button id="resetBtn" class="action-btn">Reset</button>
+            </div>
+        </div>
+
+        <!-- About Page -->
+        <div class="page" id="about-page">
+            <div class="about-content">
+                <h1>About Pro Sketcher Artist</h1>
+                <p>Pro Sketcher Artist is a powerful online tool that transforms your photos into beautiful pencil sketches. Our advanced algorithms create realistic sketch effects that mimic hand-drawn artwork.</p>
+                
+                <h2>How It Works</h2>
+                <p>Using sophisticated edge detection and shading techniques, our tool analyzes your photo and converts it into a sketch by:</p>
+                <ul>
+                    <li>Detecting important edges and outlines</li>
+                    <li>Applying pencil stroke simulation</li>
+                    <li>Adding realistic shading effects</li>
+                    <li>Preserving important details while simplifying the image</li>
+                </ul>
+
+                <h2>Features</h2>
+                <ul>
+                    <li>Adjustable sketch intensity</li>
+                    <li>Customizable edge detection</li>
+                    <li>Real-time preview</li>
+                    <li>No registration required</li>
+                    <li>100% free to use</li>
+                </ul>
+
+                <p>Whether you're an artist looking for reference sketches or just want to create unique artwork from your photos, Pro Sketcher Artist provides professional-quality results with just a few clicks.</p>
+            </div>
+        </div>
+
+        <!-- Disclaimer Page -->
+        <div class="page" id="disclaimer-page">
+            <div class="about-content">
+                <h1>Disclaimer</h1>
+                <p>Last updated: January 2025</p>
+                
+                <h2>Website Disclaimer</h2>
+                <p>The information provided by Pro Sketcher Artist ("we," "us," or "our") on our website is for general informational purposes only. All information on the site is provided in good faith, however we make no representation or warranty of any kind, express or implied, regarding the accuracy, adequacy, validity, reliability, availability, or completeness of any information on the site.</p>
+
+                <h2>External Links Disclaimer</h2>
+                <p>The site may contain links to external websites that are not provided or maintained by or in any way affiliated with us. Please note that we do not guarantee the accuracy, relevance, timeliness, or completeness of any information on these external websites.</p>
+
+                <h2>Image Processing Disclaimer</h2>
+                <p>Pro Sketcher Artist processes images entirely in your browser. We do not store, transmit, or have access to any images you process through our tool. However, the quality of the output depends on the input image quality and the selected settings.</p>
+
+                <p>By using our service, you acknowledge that you are responsible for ensuring you have the rights to process any images you upload to our tool.</p>
+            </div>
+        </div>
+
+        <!-- Privacy Policy Page -->
+        <div class="page" id="privacy-page">
+            <div class="about-content">
+                <h1>Privacy Policy</h1>
+                <p>Last updated: January 2025</p>
+                
+                <p>Pro Sketcher Artist ("us", "we", or "our") operates the Pro Sketcher Artist website (the "Service").</p>
+
+                <h2>Information Collection and Use</h2>
+                <p>We do not collect any personal information through our Service. All image processing occurs entirely within your browser, and we do not have access to any images you process through our tool.</p>
+
+                <h2>Cookies</h2>
+                <p>Our website may use "cookies" to enhance user experience. You may choose to set your web browser to refuse cookies, or to alert you when cookies are being sent.</p>
+
+                <h2>Third-party Services</h2>
+                <p>We may employ third-party companies and individuals to facilitate our Service, to provide the Service on our behalf, or to assist us in analyzing how our Service is used. These third parties have access only to anonymized, aggregated data about website usage.</p>
+
+                <h2>Changes to This Privacy Policy</h2>
+                <p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page.</p>
+
+                <h2>Contact Us</h2>
+                <p>If you have any questions about this Privacy Policy, please contact us at privacy@prosketcherartist.com</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-links">
+            <a href="#" data-page="tool">Tool</a>
+            <a href="#" data-page="about">About</a>
+            <a href="#" data-page="disclaimer">Disclaimer</a>
+            <a href="#" data-page="privacy">Privacy Policy</a>
+        </div>
+        <p>&copy; 2025 Pro Sketcher Artist. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Navigation between pages
+            const pages = document.querySelectorAll('.page');
+            const navLinks = document.querySelectorAll('nav a, .footer-links a');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const pageId = this.getAttribute('data-page');
+                    
+                    // Hide all pages
+                    pages.forEach(page => page.classList.remove('active'));
+                    
+                    // Show selected page
+                    document.getElementById(`${pageId}-page`).classList.add('active');
+                    
+                    // Update URL without reload
+                    history.pushState(null, null, `#${pageId}`);
+                });
+            });
+            
+            // Handle back/forward navigation
+            window.addEventListener('popstate', function() {
+                const hash = window.location.hash.substring(1) || 'tool';
+                
+                pages.forEach(page => page.classList.remove('active'));
+                document.getElementById(`${hash}-page`).classList.add('active');
+            });
+            
+            // Check initial hash
+            if (window.location.hash) {
+                const hash = window.location.hash.substring(1);
+                if (document.getElementById(`${hash}-page`)) {
+                    pages.forEach(page => page.classList.remove('active'));
+                    document.getElementById(`${hash}-page`).classList.add('active');
+                }
+            }
+            
+            // Tool functionality
+            const fileInput = document.getElementById('fileInput');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const originalImage = document.getElementById('originalImage');
+            const sketchImage = document.getElementById('sketchImage');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const edgeThreshold = document.getElementById('edgeThreshold');
+            const pencilIntensity = document.getElementById('pencilIntensity');
+            const shadingDetail = document.getElementById('shadingDetail');
+            const edgeValue = document.getElementById('edgeValue');
+            const pencilValue = document.getElementById('pencilValue');
+            const shadingValue = document.getElementById('shadingValue');
+            const loading = document.getElementById('loading');
+            const dropArea = document.getElementById('dropArea');
+
+            // Canvas setup
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+            // Event listeners
+            uploadBtn.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleImageUpload);
+            edgeThreshold.addEventListener('input', updateSketch);
+            pencilIntensity.addEventListener('input', updateSketch);
+            shadingDetail.addEventListener('input', updateSketch);
+            downloadBtn.addEventListener('click', downloadSketch);
+            resetBtn.addEventListener('click', reset);
+
+            // Drag and drop
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, () => {
+                    dropArea.style.backgroundColor = 'rgba(74, 111, 165, 0.2)';
+                });
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, () => {
+                    dropArea.style.backgroundColor = 'rgba(74, 111, 165, 0.05)';
+                });
+            });
+
+            dropArea.addEventListener('drop', handleDrop);
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                if (files.length) {
+                    fileInput.files = files;
+                    handleImageUpload();
+                }
+            }
+
+            // Update slider displays
+            function updateSliderDisplays() {
+                edgeValue.textContent = edgeThreshold.value;
+                pencilValue.textContent = pencilIntensity.value;
+                shadingValue.textContent = shadingDetail.value;
+            }
+
+            // Main functions
+            function handleImageUpload() {
+                const file = fileInput.files[0];
+                if (!file) return;
+
+                if (!file.type.match('image.*')) {
+                    alert('Please select an image file (JPEG, PNG, etc.)');
+                    return;
+                }
+
+                loading.style.display = 'block';
+                downloadBtn.disabled = true;
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    originalImage.src = e.target.result;
+                    originalImage.onload = function() {
+                        originalImage.style.display = 'block';
+                        updateSketch();
+                    };
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function updateSketch() {
+                if (!originalImage.src) return;
+
+                updateSliderDisplays();
+                loading.style.display = 'block';
+
+                // Use setTimeout to allow UI to update
+                setTimeout(() => {
+                    canvas.width = originalImage.naturalWidth;
+                    canvas.height = originalImage.naturalHeight;
+                    
+                    // Draw original image
+                    ctx.drawImage(originalImage, 0, 0, canvas.width, canvas.height);
+                    
+                    // Get image data
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    
+                    // Apply sketch effect
+                    const sketchData = createSketchEffect(
+                        imageData,
+                        edgeThreshold.value,
+                        pencilIntensity.value,
+                        shadingDetail.value
+                    );
+                    
+                    // Display result
+                    ctx.putImageData(sketchData, 0, 0);
+                    sketchImage.src = canvas.toDataURL();
+                    sketchImage.style.display = 'block';
+                    
+                    downloadBtn.disabled = false;
+                    loading.style.display = 'none';
+                }, 100);
+            }
+
+            function createSketchEffect(imageData, edgeThreshold, pencilIntensity, shadingDetail) {
+                const width = imageData.width;
+                const height = imageData.height;
+                const data = imageData.data;
+                const output = new ImageData(width, height);
+                
+                // Convert to grayscale first
+                const grayscale = new Uint8Array(width * height);
+                for (let i = 0, j = 0; i < data.length; i += 4, j++) {
+                    grayscale[j] = 0.299 * data[i] + 0.587 * data[i+1] + 0.114 * data[i+2];
+                }
+                
+                // Invert grayscale for pencil effect
+                const inverted = new Uint8Array(width * height);
+                for (let i = 0; i < grayscale.length; i++) {
+                    inverted[i] = 255 - grayscale[i];
+                }
+                
+                // Apply Gaussian blur (simplified)
+                const blurred = new Uint8Array(width * height);
+                const blurRadius = Math.max(1, Math.floor(3 * (1 - shadingDetail/100)));
+                
+                for (let y = blurRadius; y < height - blurRadius; y++) {
+                    for (let x = blurRadius; x < width - blurRadius; x++) {
+                        let sum = 0;
+                        let count = 0;
+                        
+                        for (let ky = -blurRadius; ky <= blurRadius; ky++) {
+                            for (let kx = -blurRadius; kx <= blurRadius; kx++) {
+                                sum += inverted[(y + ky) * width + (x + kx)];
+                                count++;
+                            }
+                        }
+                        
+                        blurred[y * width + x] = sum / count;
+                    }
+                }
+                
+                // Edge detection (simplified Sobel)
+                const edges = new Uint8Array(width * height);
+                const edgeThresholdValue = edgeThreshold * 2.55;
+                
+                for (let y = 1; y < height - 1; y++) {
+                    for (let x = 1; x < width - 1; x++) {
+                        const i = y * width + x;
+                        const gx = -blurred[i-1] + blurred[i+1];
+                        const gy = -blurred[i-width] + blurred[i+width];
+                        const magnitude = Math.sqrt(gx*gx + gy*gy);
+                        
+                        edges[i] = magnitude > edgeThresholdValue ? 255 : 0;
+                    }
+                }
+                
+                // Combine with original for pencil effect
+                const intensity = pencilIntensity / 100;
+                
+                for (let i = 0; i < data.length; i += 4) {
+                    const pixelIndex = i / 4;
+                    const edgeValue = edges[pixelIndex];
+                    const grayValue = grayscale[pixelIndex];
+                    
+                    // Create pencil sketch effect
+                    const sketchValue = 255 - Math.min(255, edgeValue * intensity + grayValue * (1 - intensity));
+                    
+                    output.data[i] = sketchValue;
+                    output.data[i+1] = sketchValue;
+                    output.data[i+2] = sketchValue;
+                    output.data[i+3] = 255;
+                }
+                
+                return output;
+            }
+
+            function downloadSketch() {
+                const link = document.createElement('a');
+                link.download = `sketch-${Date.now()}.png`;
+                link.href = sketchImage.src;
+                link.click();
+            }
+
+            function reset() {
+                fileInput.value = '';
+                originalImage.src = '';
+                sketchImage.src = '';
+                originalImage.style.display = 'none';
+                sketchImage.style.display = 'none';
+                downloadBtn.disabled = true;
+                edgeThreshold.value = 50;
+                pencilIntensity.value = 70;
+                shadingDetail.value = 30;
+                updateSliderDisplays();
+                dropArea.style.backgroundColor = 'rgba(74, 111, 165, 0.05)';
+            }
+
+            // Initialize slider displays
+            updateSliderDisplays();
+        });
+    </script>
+</body>
+</html>
